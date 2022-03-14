@@ -1,5 +1,5 @@
-import * as memoize from 'memoizee';
-import { sleep } from '../utils';
+const  memoize = require('memoizee');
+const { sleep } =  require('../utils');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
 

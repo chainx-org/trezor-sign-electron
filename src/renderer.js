@@ -2,6 +2,7 @@
 // therefore it doesn't need to included into node_modules
 // get reference straight from window object
 const { TrezorConnect } = window;
+const Api = require('./chainx');
 
 // Initialize TrezorConnect
 TrezorConnect.init({
