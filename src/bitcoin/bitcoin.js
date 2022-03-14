@@ -1,13 +1,7 @@
-const memoize = require('memoizee');
+const memoizee = require("memoizee");
 const { sleep } =  require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
-
-const fromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
-    normalizer: function (args) {
-        return JSON.stringify(args[0]) + JSON.stringify(args[1]);
-    },
-});
 
 
 async function getUnspents(address, network) {
@@ -86,6 +80,13 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
         }
     };
 
+    const normalizerFromTransaction = memoizee(bitcoin.TransactionBuilder.fromTransaction, {
+        normalizer: function (args) {
+            return JSON.stringify(args[0]) + JSON.stringify(args[1]);
+        },
+    });
+    
+
     if (!tx) return;
 
     const network =
@@ -126,7 +127,9 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
         resultInputs = ins.map(item => {
             const findOne = result.find(one => one.txid === item.hash);
             const transaction = bitcoin.Transaction.fromHex(findOne.raw);
-            const txb = fromTransaction(transaction, network);
+            console.log(`transaction: ${JSON.stringify(transaction)}`);
+            const txb = normalizerFromTransaction(transaction, network);
+            console.log(`bitcoin txb: ${JSON.stringify(txb)}`);
             const findOutputOne = txb.__tx.outs[item.index];
             const address = getAddressFromScript(findOutputOne.script, network);
             return {
