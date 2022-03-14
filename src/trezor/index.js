@@ -1,8 +1,11 @@
 const reverse = require("buffer-reverse");
 const bitcoin = require("bitcoinjs-lib-zcash");
 const bs58check = require("bs58check");
-const { getPubKeysFromRedeemScript } = require("./bitcoin-utils");
+const { getPubKeysFromRedeemScript } = require("../bitcoin/bitcoin-utils");
 const bitcore = require("bitcore-lib");
+const { TrezorConnect } = window;
+
+const BTCMainnetPath = "m/48'/0'/0'";
 
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
@@ -171,7 +174,49 @@ function constructPreTxs(inputsArr) {
 }
 
 
+class Trezor {
+    constructor(){
+    }
+    
+    async init() {
+        TrezorConnect.init({
+            webusb: false, // webusb is not supported in electron
+            debug: false, // see whats going on inside iframe
+            lazyLoad: true, // set to "false" (default) if you want to start communication with bridge on application start (and detect connected device right away)
+            // set it to "true", then trezor-connect will not be initialized until you call some TrezorConnect.method()
+            // this is useful when you don't know if you are dealing with Trezor user
+            manifest: {
+                email: 'email@developer.com',
+                appUrl: 'electron-app-boilerplate',
+            },
+        })
+            .then(() => {
+                printLog('TrezorConnect is ready!');
+            })
+            .catch(error => {
+                printLog(`TrezorConnect init error: ${error}`);
+            });
+    }
+
+    async getXPubAndPublicKey() {
+        const res = await TrezorConnect.getPublicKey({
+            path: BTCMainnetPath,
+            coin: 'btc',
+        })
+        .catch(error => {
+            console.log(`Error: ${error}`);
+        })
+    
+        const xpub = res.payload.xpub;
+        const publicKey = res.payload.publicKey;
+
+        return [xpub,publicKey]
+    }
+
+}
+
 module.exports  = {
+    Trezor,
     constructInputs,
     constructOutputs,
     constructPreTxs
