@@ -2,24 +2,25 @@
 // therefore it doesn't need to included into node_modules
 // get reference straight from window object
 const { Trezor } = require("./trezor")
+const { remove0x } = require('./util')
 const Api = require('./chainx');
+const { redeemScript } = require('./constants');
 
 // click to get public key
 const btn = document.getElementById('get-xpub');
 const log = document.getElementById('log');
+const trezor = new Trezor();
 
 btn.onclick = async () => {
-   trezor = new Trezor();
    await trezor.init()
-   
-   const [xpub,publicKey] = await trezor.getXPubAndPublicKey()
-    .catch(error => {
-        console.log(`Error: ${error}`);
-    })
-
-
-    console.log(`xpub: ${xpub} publicKey: ${publicKey}`);
-
-    await TrezorConnect
+   const bitcoinType = "mainnet"
+   const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
+   const signData = await trezor.sign(
+       rawTx, 
+       inputAndOutPutResult.txInputs, 
+       remove0x(redeemScript), 
+       bitcoinType
+    );
+    console.log(`signData: ${JSON.stringify(signData)}`);
 };
 
