@@ -3,25 +3,6 @@
 // get reference straight from window object
 const { TrezorConnect } = window;
 
-// print log helper
-const printLog = data => {
-    const log = document.getElementById('log');
-    const current = log.value;
-    if (current.length > 0) {
-        log.value = `${JSON.stringify(data)}\n\n${current}`;
-    } else {
-        log.value = JSON.stringify(data);
-    }
-};
-
-// SETUP trezor-connect
-
-// Listen to DEVICE_EVENT
-// this event will be emitted only after user grants permission to communicate with this app
-TrezorConnect.on('DEVICE_EVENT', event => {
-    printLog(event);
-});
-
 // Initialize TrezorConnect
 TrezorConnect.init({
     webusb: false, // webusb is not supported in electron
@@ -43,11 +24,23 @@ TrezorConnect.init({
 
 // click to get public key
 const btn = document.getElementById('get-xpub');
-btn.onclick = () => {
-    TrezorConnect.getPublicKey({
-        path: "m/49'/0'/0'",
+const log = document.getElementById('log');
+
+btn.onclick = async () => {
+    
+   const res = await TrezorConnect.getPublicKey({
+        path: "m/48'/0'/0'",
         coin: 'btc',
-    }).then(response => {
-        printLog(response);
-    });
+    })
+    .catch(error => {
+        console.log(`Error: ${error}`);
+    })
+
+    const xpub = res.payload.xpub;
+    const publicKey = res.payload.publicKey;
+
+    console.log(`xpub: ${xpub} publicKey: ${publicKey}`);
+
+    await TrezorConnect
 };
+

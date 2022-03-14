@@ -3,7 +3,7 @@ import { sleep } from '../utils';
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
 
-export async function getUnspents(address, network) {
+async function getUnspents(address, network) {
     const net = network === "mainnet" ? "main" : "test3";
 
     const url = `https://api.blockcypher.com/v1/btc/${net}/addrs/${address}?unspentOnly=true&confirmations=1&limit=800`;
@@ -20,7 +20,7 @@ export async function getUnspents(address, network) {
     }));
 }
 
-export function pickUtxos(utxos, outSum) {
+function pickUtxos(utxos, outSum) {
     let result = [];
     let inSum = 0;
     for (let utxo of utxos) {
@@ -45,7 +45,7 @@ const fromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
     },
 });
 
-export async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
+async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
     let outSum = amount;
     let targetInputs = pickUtxos(utxos, amount);
     let inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
@@ -75,7 +75,7 @@ export async function calcTargetUnspents(utxos, amount, feeRate, required, total
 }
 
 
-export const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
+const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
     const getAddressFromScript = (script, network) => {
         try {
             return bitcoin.address.fromOutputScript(script, network);
@@ -141,7 +141,7 @@ export const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
     }
 };
 
-export const fetchNodeTxsFromTxidList = async (ids) => {
+const fetchNodeTxsFromTxidList = async (ids) => {
     const actions = ids.map(async id => {
         const params = {
             jsonrpc: "1.0",
@@ -191,3 +191,11 @@ export const fetchNodeTxsFromTxidList = async (ids) => {
     }
 
 };
+
+module.exports = {
+    fetchNodeTxsFromTxidList,
+    getInputsAndOutputsFromTx,
+    calcTargetUnspents,
+    getUnspents,
+    pickUtxos,
+}

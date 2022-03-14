@@ -1,15 +1,8 @@
 const reverse = require("buffer-reverse");
-const EventEmitter = require("events");
-var TrezorConnect = require('trezor-connect').default;
-var DEVICE_EVENT = require('trezor-connect').DEVICE_EVENT;
-var UI_EVENT =require('trezor-connect').UI_EVENT;
-var DEVICE = require('trezor-connect').DEVICE;
-var UI = require('trezor-connect').UI;
 const bitcoin = require("bitcoinjs-lib-zcash");
 const bs58check = require("bs58check");
-const { getPubKeysFromRedeemScript, getRedeemScriptFromRaw } = require("./bitcoin-utils");
+const { getPubKeysFromRedeemScript } = require("./bitcoin-utils");
 const bitcore = require("bitcore-lib");
-const ora = require('ora');
 
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
@@ -177,3 +170,9 @@ function constructPreTxs(inputsArr) {
         .map(bjsTx2refTx);
 }
 
+
+module.exports  = {
+    constructInputs,
+    constructOutputs,
+    constructPreTxs
+}

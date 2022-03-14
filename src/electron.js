@@ -10,6 +10,9 @@ function init() {
         width: 1024,
         height: 775,
         webPreferences: {
+            enableRemoteModule:true,
+            nodeIntegration: true,
+            contextIsolation: false,
             nativeWindowOpen: true, // <-- important
         },
     });

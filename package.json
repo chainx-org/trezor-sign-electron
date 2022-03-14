@@ -57,6 +57,11 @@
         "electron-builder": "^22.7.0"
     },
     "dependencies": {
+        "bitcoinjs-lib": "^6.0.1",
+        "bitcoinjs-lib-zcash": "^3.6.1",
+        "bitcore-lib": "^8.25.25",
+        "bs58check": "^2.1.2",
+        "buffer-reverse": "^1.0.1",
         "console": "^0.7.2"
     }
 }
