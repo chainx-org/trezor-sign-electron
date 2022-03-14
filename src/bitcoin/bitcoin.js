@@ -3,7 +3,7 @@ const { sleep } =  require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
 
-const FromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
+const fromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
     normalizer: function (args) {
         return JSON.stringify(args[0]) + JSON.stringify(args[1]);
     },
@@ -94,7 +94,8 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             : bitcoin.networks.testnet;
 
     const transactionRaw = bitcoin.Transaction.fromHex(tx.replace(/^0x/, ''));
-    const txbRAW = FromTransaction(transactionRaw, network);
+    const txbRAW = fromTransaction(transactionRaw, network);
+    console.log(`txbRAW: ${JSON.stringify(txbRAW)}`);
     const resultOutputs = txbRAW.__tx.outs.map((item = {}) => {
         // @ts-ignore
         const address = getAddressFromScript(item.script, network);
@@ -117,13 +118,15 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
     });
     const ids = ins.map(item => item.hash);
     const result = await fetchNodeTxsFromTxidList(ids);
+
+    console.log(`fetch nodes result: ${JSON.stringify(result)}`);
     let resultInputs = [];
 
     if (result && result.length) {
         resultInputs = ins.map(item => {
             const findOne = result.find(one => one.txid === item.hash);
             const transaction = bitcoin.Transaction.fromHex(findOne.raw);
-            const txb = FromTransaction(transaction, network);
+            const txb = fromTransaction(transaction, network);
             const findOutputOne = txb.__tx.outs[item.index];
             const address = getAddressFromScript(findOutputOne.script, network);
             return {
