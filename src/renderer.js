@@ -2,6 +2,7 @@
 // therefore it doesn't need to included into node_modules
 // get reference straight from window object
 const { Trezor } = require("./trezor")
+const {getInputsAndOutputsFromTx} = require('./bitcoin/bitcoin')
 const { remove0x } = require('./util')
 const Api = require('./chainx');
 const { redeemScript } = require('./constants');

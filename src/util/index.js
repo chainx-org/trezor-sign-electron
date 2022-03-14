@@ -38,12 +38,13 @@ const promtSelectDevice = async () => {
     return device;
 }
 
-export function sleep(ms) {
+function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
     remove0x,
+    sleep,
     isNull,
     add0x,
     promtSelectDevice,

@@ -59,11 +59,13 @@
     "dependencies": {
         "@chainx-v2/api": "^0.0.50",
         "@polkadot/api": "^7.12.1",
-        "bitcoinjs-lib": "^6.0.1",
+        "bitcoinjs-lib": "4.0.2",
         "bitcoinjs-lib-zcash": "^3.6.1",
-        "bitcore-lib": "^8.25.25",
+        "bitcore-lib": "8.3.4",
         "bs58check": "^2.1.2",
         "buffer-reverse": "^1.0.1",
-        "console": "^0.7.2"
+        "console": "^0.7.2",
+        "memoizee": "^0.4.15",
+        "node-fetch": "2.6.1"
     }
 }

@@ -1,7 +1,14 @@
-const  memoize = require('memoizee');
-const { sleep } =  require('../utils');
+const memoize = require('memoizee');
+const { sleep } =  require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
+
+const FromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
+    normalizer: function (args) {
+        return JSON.stringify(args[0]) + JSON.stringify(args[1]);
+    },
+});
+
 
 async function getUnspents(address, network) {
     const net = network === "mainnet" ? "main" : "test3";
@@ -19,6 +26,7 @@ async function getUnspents(address, network) {
         amount: utxo.value
     }));
 }
+
 
 function pickUtxos(utxos, outSum) {
     let result = [];
@@ -38,12 +46,6 @@ function pickUtxos(utxos, outSum) {
 
     return result;
 }
-
-const fromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
-    normalizer: function (args) {
-        return JSON.stringify(args[0]) + JSON.stringify(args[1]);
-    },
-});
 
 async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
     let outSum = amount;
@@ -92,7 +94,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             : bitcoin.networks.testnet;
 
     const transactionRaw = bitcoin.Transaction.fromHex(tx.replace(/^0x/, ''));
-    const txbRAW = fromTransaction(transactionRaw, network);
+    const txbRAW = FromTransaction(transactionRaw, network);
     const resultOutputs = txbRAW.__tx.outs.map((item = {}) => {
         // @ts-ignore
         const address = getAddressFromScript(item.script, network);
@@ -121,7 +123,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
         resultInputs = ins.map(item => {
             const findOne = result.find(one => one.txid === item.hash);
             const transaction = bitcoin.Transaction.fromHex(findOne.raw);
-            const txb = fromTransaction(transaction, network);
+            const txb = FromTransaction(transaction, network);
             const findOutputOne = txb.__tx.outs[item.index];
             const address = getAddressFromScript(findOutputOne.script, network);
             return {
@@ -197,5 +199,5 @@ module.exports = {
     getInputsAndOutputsFromTx,
     calcTargetUnspents,
     getUnspents,
-    pickUtxos,
+    pickUtxos
 }
