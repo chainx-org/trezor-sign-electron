@@ -1,5 +1,5 @@
 const { Select } = require('enquirer');
-export function remove0x(str) {
+function remove0x(str) {
     if (str.startsWith("0x")) {
         return str.slice(2);
     } else {
@@ -7,7 +7,7 @@ export function remove0x(str) {
     }
 }
 
-export function isNull(str) {
+function isNull(str) {
     if (str === "") return true;
     if (str === undefined) return true;
     if (str === null) return true;
@@ -17,7 +17,7 @@ export function isNull(str) {
     return re.test(str);
 }
 
-export function add0x(str) {
+function add0x(str) {
     if (str.startsWith("0x")) {
         return str;
     } else {
@@ -26,7 +26,7 @@ export function add0x(str) {
 }
 
 
-export const promtSelectDevice = async () => {
+const promtSelectDevice = async () => {
     console.log('\n')
     const prompt = new Select({
         name: 'select device',
@@ -40,4 +40,11 @@ export const promtSelectDevice = async () => {
 
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+module.exports = {
+    remove0x,
+    isNull,
+    add0x,
+    promtSelectDevice,
 }
