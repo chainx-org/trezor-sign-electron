@@ -213,6 +213,37 @@ class Trezor {
         return [xpub,publicKey]
     }
 
+    async sign(raw, inputsArr, redeemScript,network="mainnet") {
+        if (!redeemScript) {
+            redeemScript = getRedeemScriptFromRaw(raw, network);
+        }
+        if (!redeemScript) {
+            throw new Error("redeem script not provided");
+        }
+
+        const [deviceXpub, devicePubKey] = await this.getXPubAndPublicKey();
+        const transaction = bitcoin.Transaction.fromHex(raw);
+        const inputs = constructInputs(transaction, redeemScript, devicePubKey, deviceXpub, network);
+        const outputs = constructOutputs(raw, network);
+
+        const txs = constructPreTxs(inputsArr);
+
+        console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
+        console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
+        console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
+
+        const res = await TrezorConnect.signTransaction({
+            coin: 'btc',
+            inputs: inputs,
+            outputs: outputs,
+            refTxs: txs,
+        })
+        .catch(error => {
+            console.log(`Error: ${error}`);
+        })
+        return res
+    }
+
 }
 
 module.exports  = {
