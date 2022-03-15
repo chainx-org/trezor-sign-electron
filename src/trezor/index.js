@@ -5,8 +5,6 @@ const { getPubKeysFromRedeemScript } = require("../bitcoin/bitcoin-utils");
 const bitcore = require("bitcore-lib");
 const { TrezorConnect } = window;
 
-const BTCMainnetPath = "m/48'/0'/0'";
-
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
     (45 | hardeningConstant) >>> 0,
@@ -200,17 +198,22 @@ class Trezor {
 
     async getXPubAndPublicKey() {
         const res = await TrezorConnect.getPublicKey({
-            path: BTCMainnetPath,
+            path: mainnetPath,
             coin: 'btc',
         })
         .catch(error => {
             console.log(`Error: ${error}`);
         })
+        console.log(JSON.stringify(res));
+        debugger
     
         const xpub = res.payload.xpub;
         const publicKey = res.payload.publicKey;
 
-        return [xpub,publicKey]
+        return {
+            xpub:xpub,
+            publicKey:publicKey
+        }
     }
 
     async sign(raw, inputsArr, redeemScript,network="mainnet") {
@@ -221,9 +224,9 @@ class Trezor {
             throw new Error("redeem script not provided");
         }
 
-        const [deviceXpub, devicePubKey] = await this.getXPubAndPublicKey();
+        const deviceInfo = await this.getXPubAndPublicKey();
         const transaction = bitcoin.Transaction.fromHex(raw);
-        const inputs = constructInputs(transaction, redeemScript, devicePubKey, deviceXpub, network);
+        const inputs = constructInputs(transaction, redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
         const outputs = constructOutputs(raw, network);
 
         const txs = constructPreTxs(inputsArr);
