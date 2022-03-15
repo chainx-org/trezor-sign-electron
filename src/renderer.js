@@ -17,8 +17,9 @@ btn.onclick = async () => {
    rawTx = log.value
    const bitcoinType = "mainnet"
    console.log(`rawTx: ${rawTx}`);
-   const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
+   const inputAndOutPutResult = await getInputsAndOutputsFromTx('01000000014401a3070c1ad369e9540415dfddc1d63539df81e39dd9633bcf92119e44a0260100000000ffffffff0200e1f5050000000017a9143cb48559ce25173abcc3af7452ce8c6e2791f90a87d3ca02000000000017a914d246f700f4969106291a75ba85ad863cae68d6678700000000', bitcoinType);
    console.log(`inputAndOutPutResult: ${JSON.stringify(inputAndOutPutResult)}`);
+   return
    const signData = await trezor.sign(
        rawTx, 
        inputAndOutPutResult.txInputs, 

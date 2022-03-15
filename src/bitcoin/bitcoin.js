@@ -1,7 +1,8 @@
-const memoizee = require("memoizee");
+const  memoize = require('memoizee');
 const { sleep } =  require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
+const {BITCOIN_FEE_RATE} = require('../constants');
 
 
 async function getUnspents(address, network) {
@@ -35,7 +36,6 @@ function pickUtxos(utxos, outSum) {
 
     if (inSum < outSum) {
         throw new Error("UTXO 不足以支付提现");
-        process.exit(1);
     }
 
     return result;
@@ -53,7 +53,7 @@ async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
 
     let minerFee = parseInt(
         // @ts-ignore
-        (Number(process.env.bitcoin_fee_rate) * bytes) / 1000, 10
+        (Number(BITCOIN_FEE_RATE) * bytes) / 1000, 10
     );
 
     while (inputSum < outSum + minerFee) {
@@ -63,7 +63,7 @@ async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
             targetInputs.length * (48 + 73 * required + 34 * total) +
             34 * (outputLength + 1) +
             14;
-        minerFee = (Number(process.env.bitcoin_fee_rate) * bytes) / 1000;
+        minerFee = (Number(BITCOIN_FEE_RATE) * bytes) / 1000;
     }
 
 
@@ -80,7 +80,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
         }
     };
 
-    const normalizerFromTransaction = memoizee(bitcoin.TransactionBuilder.fromTransaction, {
+    const normalizerFromTransaction = memoize(bitcoin.TransactionBuilder.fromTransaction, {
         normalizer: function (args) {
             return JSON.stringify(args[0]) + JSON.stringify(args[1]);
         },
@@ -95,7 +95,8 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             : bitcoin.networks.testnet;
 
     const transactionRaw = bitcoin.Transaction.fromHex(tx.replace(/^0x/, ''));
-    const txbRAW = fromTransaction(transactionRaw, network);
+    console.log(`transactionRaw: ${JSON.stringify(transactionRaw)}`);
+    const txbRAW = normalizerFromTransaction(transactionRaw, network);
     console.log(`txbRAW: ${JSON.stringify(txbRAW)}`);
     const resultOutputs = txbRAW.__tx.outs.map((item = {}) => {
         // @ts-ignore
