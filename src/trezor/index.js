@@ -205,7 +205,6 @@ class Trezor {
             console.log(`Error: ${error}`);
         })
         console.log(JSON.stringify(res));
-        debugger
     
         const xpub = res.payload.xpub;
         const publicKey = res.payload.publicKey;
