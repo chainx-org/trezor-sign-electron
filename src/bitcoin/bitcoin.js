@@ -130,7 +130,6 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             const transaction = bitcoin.Transaction.fromHex(findOne.raw);
             console.log(`transaction: ${JSON.stringify(transaction)}`);
             const txb = normalizerFromTransaction(transaction, network);
-            console.log(`bitcoin txb: ${JSON.stringify(txb)}`);
             const findOutputOne = txb.__tx.outs[item.index];
             const address = getAddressFromScript(findOutputOne.script, network);
             return {
