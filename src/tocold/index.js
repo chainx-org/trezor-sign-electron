@@ -22,7 +22,7 @@ async function contructToCold(bitcoin_fee_rate) {
             return b.amount > a.amount
     });
     // 每次取 200 个utxo 
-    console.log(`utxo length ${unspents.length})}`)
+    console.log(`utxo length ${unspents.length}}`)
 
     const utxolength = unspents.length > 200 ? 200 : unspents.length;
 
