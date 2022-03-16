@@ -4,7 +4,10 @@ const colors = require('colors')
 const Api = require("../chainx")
 const { MIN_CHANGE } = require("../constants")
 
-async function contructToCold(bitcoin_fee_rate) {
+async function contructToCold(rawAmount,bitcoin_fee_rate) {
+
+    // 代转账金额
+    const utxoCalamount =  Math.pow(10, 8) * parseFloat(rawAmount);
 
     const info = await Api.getInstance().getTrusteeSessionInfo();
     const hotAddr = String(info.hotAddress.addr);
@@ -24,12 +27,12 @@ async function contructToCold(bitcoin_fee_rate) {
     // 每次取 200 个utxo 
     console.log(`utxo length ${unspents.length}}`)
 
-    const utxolength = unspents.length > 200 ? 200 : unspents.length;
+    // const utxolength = unspents.length > 200 ? 200 : unspents.length;
 
-    let utxoCalamount = 0
-    for (let i = 0; i < utxolength; i ++) {
-        utxoCalamount += unspents[i].amount
-    }
+    // let utxoCalamount = 0
+    // for (let i = 0; i < utxolength; i ++) {
+    //     utxoCalamount += unspents[i].amount
+    // }
  
     console.log(`转账的 utxoCalamount: ${utxoCalamount} `)
 
