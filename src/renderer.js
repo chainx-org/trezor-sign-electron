@@ -8,13 +8,13 @@ const Api = require('./chainx');
 const { redeemScript } = require('./constants');
 
 // click to get public key
-const btn = document.getElementById('get-xpub');
-const log = document.getElementById('log');
+const btnSignWithTrezor = document.getElementById('sign-with-trezor');
+const textRawTx = document.getElementById('text-rawtx');
 const trezor = new Trezor();
 
-btn.onclick = async () => {
+btnSignWithTrezor.onclick = async () => {
    await trezor.init()
-   rawTx = log.value
+   rawTx = textRawTx.value
    const bitcoinType = "mainnet"
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
    const signData = await trezor.sign(
