@@ -4,10 +4,7 @@ const colors = require('colors')
 const Api = require("../chainx")
 const { MIN_CHANGE } = require("../constants")
 
-async function contructToCold(bitcoin_fee_rate, utxo_amount) {
-
-    // 将 amount 转化为聪
-    const amount =  Math.pow(10, 8) * parseFloat(utxo_amount);
+async function contructToCold(bitcoin_fee_rate) {
 
     const info = await Api.getInstance().getTrusteeSessionInfo();
     const hotAddr = String(info.hotAddress.addr);
