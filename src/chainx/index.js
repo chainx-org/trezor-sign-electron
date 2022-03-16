@@ -29,6 +29,15 @@ class Api {
         return bitcoinTrusteeSessionInfo
     }
 
+    async getChainProperties() {
+         return {
+             ss58Format: 44,
+             bitcoinType: "mainnet",
+             tokenDecimals:18,
+             tokenSymbol:'PCX'
+         };
+     }
+
 }
 
 module.exports = Api
