@@ -183,7 +183,7 @@ const fetchNodeTxsFromTxidList = async (ids) => {
     for (let action of actions) {
         const result = await action;
         // 等待两秒
-        await sleep(50)
+        await sleep(300)
         console.log(`当前第 ${index++} 个rawtx请求，总计 ${actions.length} 个`);
         if (result && result.result) {
             rawTxs.push(result);
