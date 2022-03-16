@@ -35,6 +35,7 @@ function pickUtxos(utxos, outSum) {
     }
 
     if (inSum < outSum) {
+        console.log(`not enough money: ${inSum} < ${outSum}`);
         throw new Error("UTXO 不足以支付提现");
     }
 
@@ -53,7 +54,7 @@ async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
 
     let minerFee = parseInt(
         // @ts-ignore
-        (Number(BITCOIN_FEE_RATE) * bytes) / 1000, 10
+        (Number(feeRate) * bytes) / 1000, 10
     );
 
     while (inputSum < outSum + minerFee) {
@@ -63,7 +64,7 @@ async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
             targetInputs.length * (48 + 73 * required + 34 * total) +
             34 * (outputLength + 1) +
             14;
-        minerFee = (Number(BITCOIN_FEE_RATE) * bytes) / 1000;
+        minerFee = (Number(feeRate) * bytes) / 1000;
     }
 
 

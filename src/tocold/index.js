@@ -24,10 +24,21 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
     unspents.sort((a, b) => {
             return b.amount > a.amount
     });
+    // 每次取 200 个utxo 
+    console.log(`utxo length ${unspents.length})}`)
+
+    const utxolength = unspents.length > 200 ? 200 : unspents.length;
+
+    let utxoCalamount = 0
+    for (let i = 0; i < utxolength; i ++) {
+        utxoCalamount += unspents[i].amount
+    }
+ 
+    console.log(`转账的 utxoCalamount: ${utxoCalamount} `)
 
     let [targetInputs, minerFee] = await calcTargetUnspents(
         unspents,
-        amount,
+        utxoCalamount,
         bitcoin_fee_rate,
         required,
         total
@@ -40,9 +51,9 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
         minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
     }
 
-    let change = inputSum - amount - minerFee;
+    let change = inputSum - utxoCalamount - minerFee;
 
-    console.log(`inputSum ${inputSum} amount ${amount} minerFee ${minerFee}`);
+    console.log(`inputSum ${inputSum} amount ${utxoCalamount} minerFee ${minerFee}`);
     if (change < Number(MIN_CHANGE)) {
         change = 0;
     }
@@ -59,7 +70,7 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
         txb.addInput(unspent.txid, unspent.vout);   
     }
 
-    txb.addOutput(coldAddr, amount);
+    txb.addOutput(coldAddr, utxoCalamount);
     if (change > 0) {
         console.log(`hotAddr ${hotAddr} change ${change} BTC`);
         txb.addOutput(hotAddr, change);
