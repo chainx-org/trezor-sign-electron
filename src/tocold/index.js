@@ -2,14 +2,19 @@ const { getUnspents, calcTargetUnspents } = require("../bitcoin/bitcoin.js")
 const bitcoin = require("bitcoinjs-lib");
 const colors = require('colors')
 const Api = require("../chainx")
+const { MIN_CHANGE } = require("../constants")
 
 async function contructToCold(bitcoin_fee_rate, utxo_amount) {
+
+    // 将 amount 转化为聪
+    const amount =  Math.pow(10, 8) * parseFloat(utxo_amount);
+
     const info = await Api.getInstance().getTrusteeSessionInfo();
-    const hotAddr = info.hotAddress.addr;
-    const coldAddr = info.coldAddress.addr;
+    const hotAddr = String(info.hotAddress.addr);
+    const coldAddr = String(info.coldAddress.addr);
     const required = info.threshold;
 
-    console.log(colors.yellow(`redeem script ${info.coldAddress.redeemScript.toString()}`))
+    console.log(colors.blue(`hot address: ${hotAddr}, cold address: ${coldAddr} required: ${required}, total:${info.trusteeList.length}))`));
     const properties = await Api.getInstance().getChainProperties();
 
     const total = info.trusteeList.length;
@@ -22,11 +27,12 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
 
     let [targetInputs, minerFee] = await calcTargetUnspents(
         unspents,
-        utxo_amount,
+        amount,
         bitcoin_fee_rate,
         required,
         total
     );
+    
     const inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
     if (!minerFee) {
         throw new Error("手续费计算错误");
@@ -34,10 +40,10 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
         minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
     }
 
-    let change = inputSum - this.amount - minerFee;
+    let change = inputSum - amount - minerFee;
 
-    console.log(`inputSum ${inputSum} amount ${this.amount} minerFee ${minerFee}`);
-    if (change < Number(process.env.min_change)) {
+    console.log(`inputSum ${inputSum} amount ${amount} minerFee ${minerFee}`);
+    if (change < Number(MIN_CHANGE)) {
         change = 0;
     }
 
@@ -53,14 +59,12 @@ async function contructToCold(bitcoin_fee_rate, utxo_amount) {
         txb.addInput(unspent.txid, unspent.vout);   
     }
 
-    txb.addOutput(coldAddr, this.amount);
+    txb.addOutput(coldAddr, amount);
     if (change > 0) {
         console.log(`hotAddr ${hotAddr} change ${change} BTC`);
         txb.addOutput(hotAddr, change);
     }
     const rawTx = txb.buildIncomplete().toHex();
-    console.log("未签原始交易原文:");
-    console.log(colors.green(rawTx));
     return rawTx;
 }
 
