@@ -34,6 +34,7 @@ btnSignToCold.onclick = async () => {
     let toColdNumber = textToCold.value
     const hash = await contructToCold(23245,toColdNumber)
     console.log(`hash: ${hash}`);
+    textRawTx.value = hash
     window.alert(JSON.stringify(hash))
 }
 
