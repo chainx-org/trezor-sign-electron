@@ -5,7 +5,7 @@ const { Trezor } = require("./trezor")
 const {getInputsAndOutputsFromTx} = require('./bitcoin/bitcoin')
 const { remove0x } = require('./util')
 const {contructToCold} = require("./tocold")
-const { redeemScript } = require('./constants');
+const { redeemScript,BITCOIN_FEE_RATE} = require('./constants');
 
 // click to get public key
 const btnSignWithTrezor = document.getElementById('sign-with-trezor');
@@ -15,6 +15,8 @@ const btnSignToCold = document.getElementById('sign-to-cold');
 const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 
+inputBitcoinNumber.value = 5.47;
+inputBitcoinFee.value = BITCOIN_FEE_RATE
 const trezor = new Trezor();
 
 btnSignToCold.onclick = async () => {
