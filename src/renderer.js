@@ -15,6 +15,7 @@ const btnSignToCold = document.getElementById('sign-to-cold');
 const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 
+const signpanel = document.getElementById('text-signedtx');
 inputBitcoinNumber.value = 1;
 inputBitcoinFee.value = BITCOIN_FEE_RATE
 const trezor = new Trezor();
@@ -42,6 +43,7 @@ btnSignWithTrezor.onclick = async () => {
        bitcoinType
     );
     console.log(`signData: ${JSON.stringify(signData)}`);
+    signpanel.value = JSON.stringify(signData)
 };
 
 
