@@ -15,7 +15,7 @@ const btnSignToCold = document.getElementById('sign-to-cold');
 const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 
-inputBitcoinNumber.value = 4.5;
+inputBitcoinNumber.value = 1;
 inputBitcoinFee.value = BITCOIN_FEE_RATE
 const trezor = new Trezor();
 
