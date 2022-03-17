@@ -12,11 +12,8 @@ const btnSignWithTrezor = document.getElementById('sign-with-trezor');
 const textRawTx = document.getElementById('text-rawtx');
 
 const btnSignToCold = document.getElementById('sign-to-cold');
-const textToCold = document.getElementById('text-tocold');
 const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
-inputBitcoinFee.value = 29422
-inputBitcoinNumber.value = 5.47
 
 const trezor = new Trezor();
 
