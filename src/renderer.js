@@ -14,6 +14,10 @@ const textRawTx = document.getElementById('text-rawtx');
 const btnSignToCold = document.getElementById('sign-to-cold');
 const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
+const trezorAddress = document.getElementById('trezor-address');
+const trezorPublicKey = document.getElementById('trezor-publickey');
+
+const colors = require('colors')
 
 const signpanel = document.getElementById('text-signedtx');
 inputBitcoinNumber.value = 1;
@@ -34,6 +38,13 @@ btnSignToCold.onclick = async () => {
 btnSignWithTrezor.onclick = async () => {
    await trezor.init()
    let rawTx = textRawTx.value
+
+   const address = await trezor.getAddress()
+   const deviceInfo = await trezor.getXPubAndPublicKey()
+   trezorAddress.innerText = address
+   trezorPublicKey.innerText = deviceInfo.publicKey
+
+   console.log(colors.red(`当前钱包 address: ${address}  xpub: ${deviceInfo.xpub} publicKey: ${deviceInfo.publicKey}`));
    const bitcoinType = "mainnet"
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
    const signData = await trezor.sign(

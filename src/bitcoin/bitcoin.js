@@ -2,6 +2,7 @@ const  memoize = require('memoizee');
 const { sleep } =  require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
+const colors = require('colors')
 const {BITCOIN_FEE_RATE} = require('../constants');
 
 
@@ -122,14 +123,14 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
     const ids = ins.map(item => item.hash);
     const result = await fetchNodeTxsFromTxidList(ids);
 
-    console.log(`fetch nodes result: ${JSON.stringify(result)}`);
+    //console.log(`fetch nodes result: ${JSON.stringify(result)}`);
     let resultInputs = [];
 
     if (result && result.length) {
         resultInputs = ins.map(item => {
             const findOne = result.find(one => one.txid === item.hash);
             const transaction = bitcoin.Transaction.fromHex(findOne.raw);
-            console.log(`transaction: ${JSON.stringify(transaction)}`);
+            //console.log(`transaction: ${JSON.stringify(transaction)}`);
             const txb = normalizerFromTransaction(transaction, network);
             const findOutputOne = txb.__tx.outs[item.index];
             const address = getAddressFromScript(findOutputOne.script, network);

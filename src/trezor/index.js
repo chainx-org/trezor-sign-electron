@@ -5,6 +5,8 @@ const { getPubKeysFromRedeemScript } = require("../bitcoin/bitcoin-utils");
 const bitcore = require("bitcore-lib");
 const { TrezorConnect } = window;
 
+const colors = require('colors')
+
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
     (45 | hardeningConstant) >>> 0,
@@ -196,6 +198,17 @@ class Trezor {
             });
     }
 
+    async getAddress() {
+        const response = await TrezorConnect.getAddress({
+            path: mainnetPath,
+            coin: 'btc'
+        });
+        if (response.success) {
+            return response.payload.address;
+        }
+        return null;
+    }
+
     async getXPubAndPublicKey() {
         const res = await TrezorConnect.getPublicKey({
             path: mainnetPath,
@@ -204,8 +217,6 @@ class Trezor {
         .catch(error => {
             console.log(`Error: ${error}`);
         })
-        console.log(JSON.stringify(res));
-    
         const xpub = res.payload.xpub;
         const publicKey = res.payload.publicKey;
 
@@ -224,15 +235,18 @@ class Trezor {
         }
 
         const deviceInfo = await this.getXPubAndPublicKey();
+
+        console.log(colors.red(`get public key deviceInfo: ${JSON.stringify(deviceInfo)}`));
+
         const transaction = bitcoin.Transaction.fromHex(raw);
         const inputs = constructInputs(transaction, redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
         const outputs = constructOutputs(raw, network);
 
         const txs = constructPreTxs(inputsArr);
 
-        console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
-        console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
-        console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
+        //console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
+        //console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
+        //console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
 
         const res = await TrezorConnect.signTransaction({
             coin: 'btc',
