@@ -9,14 +9,14 @@ const colors = require('colors')
 
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
-    (45 | hardeningConstant) >>> 0,
+    (49 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     0,
     0
 ];
 const testnetPath = [
-    (45 | hardeningConstant) >>> 0,
+    (48 | hardeningConstant) >>> 0,
     (1 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     0,
@@ -257,6 +257,17 @@ class Trezor {
             console.log(`Error: ${error}`);
         })
         return res
+    }
+
+    async signMessage(message) {
+        const res = await TrezorConnect.signMessage({
+            path: this.bitcoinPath,
+            message: message,
+        }).catch(error => {
+            console.log(`Error: ${error}`);
+        })
+        return res
+
     }
 
 }
