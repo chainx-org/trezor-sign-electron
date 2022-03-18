@@ -5,6 +5,7 @@ const { Trezor } = require("./trezor")
 const {getInputsAndOutputsFromTx} = require('./bitcoin/bitcoin')
 const { remove0x } = require('./util')
 const {contructToCold} = require("./tocold")
+const colors = require('colors')
 const { redeemScript,BITCOIN_FEE_RATE} = require('./constants');
 
 // click to get public key
@@ -16,13 +17,12 @@ const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 const trezorAddress = document.getElementById('trezor-address');
 const trezorPublicKey = document.getElementById('trezor-publickey');
-
-const colors = require('colors')
+const bitcoinType = "mainnet"
 
 const signpanel = document.getElementById('text-signedtx');
 inputBitcoinNumber.value = 1;
 inputBitcoinFee.value = BITCOIN_FEE_RATE
-const trezor = new Trezor();
+const trezor = new Trezor(bitcoinType);
 
 btnSignToCold.onclick = async () => {
     await trezor.init()
@@ -43,9 +43,7 @@ btnSignWithTrezor.onclick = async () => {
    const deviceInfo = await trezor.getXPubAndPublicKey()
    trezorAddress.innerText = address
    trezorPublicKey.innerText = deviceInfo.publicKey
-
    console.log(colors.red(`当前钱包 address: ${address}  xpub: ${deviceInfo.xpub} publicKey: ${deviceInfo.publicKey}`));
-   const bitcoinType = "mainnet"
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
    const signData = await trezor.sign(
        rawTx, 

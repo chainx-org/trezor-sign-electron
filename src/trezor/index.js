@@ -175,7 +175,9 @@ function constructPreTxs(inputsArr) {
 
 
 class Trezor {
-    constructor(){
+    bitcoinPath = null
+    constructor(network = "mainnet"){
+        this.bitcoinPath = network === "mainnet" ? mainnetPath : testnetPath;
     }
     
     async init() {
@@ -200,7 +202,7 @@ class Trezor {
 
     async getAddress() {
         const response = await TrezorConnect.getAddress({
-            path: mainnetPath,
+            path: this.bitcoinPath,
             coin: 'btc'
         });
         if (response.success) {
@@ -211,7 +213,7 @@ class Trezor {
 
     async getXPubAndPublicKey() {
         const res = await TrezorConnect.getPublicKey({
-            path: mainnetPath,
+            path: this.bitcoinPath,
             coin: 'btc',
         })
         .catch(error => {
