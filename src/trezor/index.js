@@ -9,14 +9,14 @@ const colors = require('colors')
 
 const hardeningConstant = 0x80000000;
 const mainnetPath = [
-    (49 | hardeningConstant) >>> 0,
+    (45 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     0,
     0
 ];
 const testnetPath = [
-    (48 | hardeningConstant) >>> 0,
+    (45 | hardeningConstant) >>> 0,
     (1 | hardeningConstant) >>> 0,
     (0 | hardeningConstant) >>> 0,
     0,

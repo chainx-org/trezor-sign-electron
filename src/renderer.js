@@ -46,6 +46,7 @@ btnSignWithTrezor.onclick = async () => {
 
    console.log(colors.red(`当前钱包 address: ${address}  xpub: ${deviceInfo.xpub} publicKey: ${deviceInfo.publicKey}`));
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
+   
    const signData = await trezor.sign(
        rawTx, 
        inputAndOutPutResult.txInputs, 
