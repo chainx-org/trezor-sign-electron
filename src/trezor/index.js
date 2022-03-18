@@ -228,7 +228,7 @@ class Trezor {
         }
     }
 
-    async sign(raw, inputsArr, redeemScript,network="mainnet") {
+    async sign(raw, inputsArr, redeemScript,network="mainnet",deviceInfo) {
         if (!redeemScript) {
             redeemScript = getRedeemScriptFromRaw(raw, network);
         }
@@ -236,9 +236,6 @@ class Trezor {
             throw new Error("redeem script not provided");
         }
 
-        const deviceInfo = await this.getXPubAndPublicKey();
-
-        console.log(colors.red(`get public key deviceInfo: ${JSON.stringify(deviceInfo)}`));
 
         const transaction = bitcoin.Transaction.fromHex(raw);
         const inputs = constructInputs(transaction, redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);

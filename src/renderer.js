@@ -41,15 +41,17 @@ btnSignWithTrezor.onclick = async () => {
 
    const address = await trezor.getAddress()
    const deviceInfo = await trezor.getXPubAndPublicKey()
-   trezorAddress.innerText = address
-   trezorPublicKey.innerText = deviceInfo.publicKey
+   trezorAddress.innerText = `当前硬件钱包地址为：${address}`
+   trezorPublicKey.innerText = `当前硬件钱包公钥为：${deviceInfo.publicKey}` 
+
    console.log(colors.red(`当前钱包 address: ${address}  xpub: ${deviceInfo.xpub} publicKey: ${deviceInfo.publicKey}`));
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
    const signData = await trezor.sign(
        rawTx, 
        inputAndOutPutResult.txInputs, 
        remove0x(redeemScript), 
-       bitcoinType
+       bitcoinType,
+       deviceInfo
     );
     console.log(`signData: ${JSON.stringify(signData)}`);
     signpanel.value = JSON.stringify(signData)
