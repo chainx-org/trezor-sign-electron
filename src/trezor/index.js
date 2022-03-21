@@ -237,7 +237,7 @@ class Trezor {
         if (!redeemScript) {
             throw new Error("redeem script not provided");
         }
-
+        console.log(colors.red(`coin: ${this.coin} path: ${this.path}`))
 
         const transaction = bitcoin.Transaction.fromHex(raw);
         const inputs = constructInputs(transaction, redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
@@ -248,12 +248,12 @@ class Trezor {
         console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
         console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
         console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
-
         const res = await TrezorConnect.signTransaction({
             coin: this.coin,
             inputs: inputs,
             outputs: outputs,
             refTxs: txs,
+            push: false
         })
         .catch(error => {
             console.log(`Error: ${error}`);
