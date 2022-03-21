@@ -243,9 +243,9 @@ class Trezor {
 
         const txs = constructPreTxs(inputsArr);
 
-        //console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
-        //console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
-        //console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
+        console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
+        console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
+        console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
 
         const res = await TrezorConnect.signTransaction({
             coin: 'btc',
