@@ -17,7 +17,7 @@ const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 const trezorAddress = document.getElementById('trezor-address');
 const trezorPublicKey = document.getElementById('trezor-publickey');
-const bitcoinType = "mainnet"
+const bitcoinType = "testnet"
 
 const signpanel = document.getElementById('text-signedtx');
 inputBitcoinNumber.value = 1;

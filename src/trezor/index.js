@@ -176,8 +176,10 @@ function constructPreTxs(inputsArr) {
 
 class Trezor {
     bitcoinPath = null
+    coin = null
     constructor(network = "mainnet"){
         this.bitcoinPath = network === "mainnet" ? mainnetPath : testnetPath;
+        this.coin = network === "mainnet" ? "btc" : "test";
     }
     
     async init() {
@@ -203,7 +205,7 @@ class Trezor {
     async getAddress() {
         const response = await TrezorConnect.getAddress({
             path: this.bitcoinPath,
-            coin: 'btc'
+            coin: this.coin
         });
         if (response.success) {
             return response.payload.address;
@@ -214,7 +216,7 @@ class Trezor {
     async getXPubAndPublicKey() {
         const res = await TrezorConnect.getPublicKey({
             path: this.bitcoinPath,
-            coin: 'btc',
+            coin: this.coin,
         })
         .catch(error => {
             console.log(`Error: ${error}`);
@@ -248,7 +250,7 @@ class Trezor {
         console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
 
         const res = await TrezorConnect.signTransaction({
-            coin: 'btc',
+            coin: this.coin,
             inputs: inputs,
             outputs: outputs,
             refTxs: txs,
