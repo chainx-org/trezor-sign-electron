@@ -14,7 +14,7 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
     const coldAddr = String(info.coldAddress.addr);
     const required = info.threshold;
 
-    console.log(colors.blue(`hot address: ${hotAddr}, cold address: ${coldAddr} required: ${required}, total:${info.trusteeList.length}))`));
+    console.log(colors.blue(`hot address: ${hotAddr}, cold address: ${coldAddr} required: ${required}, total:${JSON.stringify(info.trusteeList)}))`));
     const properties = await Api.getInstance().getChainProperties();
 
     const total = info.trusteeList.length;
