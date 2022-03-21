@@ -27,16 +27,6 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
     // 每次取 200 个utxo 
     console.log(`utxo length ${unspents.length}}`)
 
-    const utxolength = unspents.length > 195 ? 195 : unspents.length;
-
-    let utxopre = 0
-    for (let i = 0; i < utxolength; i ++) {
-        utxopre += unspents[i].amount
-    }
- 
-    console.log(`转账的 utxoCalamount: ${utxoCalamount} `)
-    console.log(`前200 utxopre 数量: ${utxopre} `)
-
     let [targetInputs, minerFee] = await calcTargetUnspents(
         unspents,
         utxoCalamount,
