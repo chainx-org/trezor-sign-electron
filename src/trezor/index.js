@@ -101,7 +101,8 @@ function getMultisigObj(input, redeemScript, devicePubKey, deviceXpub, network =
     );
 }
 
-function constructInputs(tx, redeemScript, devicePubKey, deviceXpub, network = "mainnet") {
+// 需要传下 refTx 用于构造
+function constructInputs(tx, refTxs,redeemScript, devicePubKey, deviceXpub, network = "mainnet") {
     const txb = bitcoin.TransactionBuilder.fromTransaction(
         tx,
         network === "mainnet"
@@ -112,12 +113,15 @@ function constructInputs(tx, redeemScript, devicePubKey, deviceXpub, network = "
     const multisigArr = txb.inputs.map(input => {
         return getMultisigObj(input, redeemScript, devicePubKey, deviceXpub, network);
     })
-
+    
     return tx.ins.map((input, index) => {
+        const refTxAmount = String(refTxs[index].bin_outputs[input.index].amount);
+        console.log(`refTxAmount: ${refTxAmount}`)
         return {
             address_n: network === "mainnet" ? mainnetPath : testnetPath,
             script_type: "SPENDMULTISIG",
             prev_index: input.index,
+            amount: refTxAmount,
             prev_hash: reverse(input.hash).toString("hex"),
             multisig: multisigArr[index]
         };
@@ -237,13 +241,13 @@ class Trezor {
         if (!redeemScript) {
             throw new Error("redeem script not provided");
         }
-        console.log(colors.red(`coin: ${this.coin} path: ${this.path}`))
-
+        console.log(colors.red(`coin: ${this.coin} path: ${this.bitcoinPath}`))
+        
         const transaction = bitcoin.Transaction.fromHex(raw);
-        const inputs = constructInputs(transaction, redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
-        const outputs = constructOutputs(raw, network);
-
+        
         const txs = constructPreTxs(inputsArr);
+        const inputs = constructInputs(transaction,txs,redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
+        const outputs = constructOutputs(raw, network);
 
         console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
         console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
@@ -252,8 +256,7 @@ class Trezor {
             coin: this.coin,
             inputs: inputs,
             outputs: outputs,
-            refTxs: txs,
-            push: false
+            refTxs: txs
         })
         .catch(error => {
             console.log(`Error: ${error}`);
