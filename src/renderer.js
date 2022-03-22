@@ -7,6 +7,7 @@ const { remove0x } = require('./util')
 const {contructToCold} = require("./tocold")
 const colors = require('colors')
 const { redeemScript,BITCOIN_FEE_RATE} = require('./constants');
+//const {cal} = require('./cal')
 
 // click to get public key
 const btnSignWithTrezor = document.getElementById('sign-with-trezor');
