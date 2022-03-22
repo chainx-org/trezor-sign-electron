@@ -113,7 +113,7 @@ function constructInputs(tx, refTxs,redeemScript, devicePubKey, deviceXpub, netw
     const multisigArr = txb.inputs.map(input => {
         return getMultisigObj(input, redeemScript, devicePubKey, deviceXpub, network);
     })
-    
+
     return tx.ins.map((input, index) => {
         const refTxAmount = String(refTxs[index].bin_outputs[input.index].amount);
         console.log(`refTxAmount: ${refTxAmount}`)
@@ -135,7 +135,7 @@ function constructOutputs(raw, network = "mainnet") {
     return tx.outputs.map(output => {
         const address = bitcore.Address.fromScript(output.script, net).toString();
         return {
-            amount: output.satoshis,
+            amount: output.satoshis.toString(),
             address,
             script_type: "PAYTOADDRESS"
         };
@@ -185,7 +185,7 @@ class Trezor {
         this.bitcoinPath = network === "mainnet" ? mainnetPath : testnetPath;
         this.coin = network === "mainnet" ? "btc" : "test";
     }
-    
+
     async init() {
         TrezorConnect.init({
             webusb: false, // webusb is not supported in electron
@@ -242,21 +242,21 @@ class Trezor {
             throw new Error("redeem script not provided");
         }
         console.log(colors.red(`coin: ${this.coin} path: ${this.bitcoinPath}`))
-        
+
         const transaction = bitcoin.Transaction.fromHex(raw);
-        
-        const txs = constructPreTxs(inputsArr);
-        const inputs = constructInputs(transaction,txs,redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
+
+        const refTxs = constructPreTxs(inputsArr);
+        const inputs = constructInputs(transaction,refTxs,redeemScript, deviceInfo.publicKey, deviceInfo.xpub, network);
         const outputs = constructOutputs(raw, network);
 
         console.log(`trezor sign inputs: ${JSON.stringify(inputs)}`);
         console.log(`trezor sign outputs: ${JSON.stringify(outputs)}`);
-        console.log(`trezor sign txs: ${JSON.stringify(txs)}`);
+        console.log(`trezor sign refTxs: ${JSON.stringify(refTxs)}`);
         const res = await TrezorConnect.signTransaction({
             coin: this.coin,
             inputs: inputs,
             outputs: outputs,
-            refTxs: txs
+            refTxs: refTxs
         })
         .catch(error => {
             console.log(`Error: ${error}`);
