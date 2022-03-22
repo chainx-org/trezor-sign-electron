@@ -1,6 +1,6 @@
 {
     "name": "trezor-sign-tools",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Example of electron app with trezor-connect",
     "main": "src/electron.js",
     "author": "Satoshilabs s.r.o <info@satoshilabs.com>",
