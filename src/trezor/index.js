@@ -135,7 +135,7 @@ function constructOutputs(raw, network = "mainnet") {
     return tx.outputs.map(output => {
         const address = bitcore.Address.fromScript(output.script, net).toString();
         return {
-            amount: output.satoshis.toString(),
+            amount: String(output.satoshis),
             address,
             script_type: "PAYTOADDRESS"
         };
