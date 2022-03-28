@@ -59,7 +59,6 @@
     },
     "dependencies": {
         "musig2bitcoin": "1.4.4",
-        "@chainx-v2/api": "^0.0.50",
         "@ledgerhq/hw-app-btc": "^5.34.1",
         "@ledgerhq/hw-transport-node-hid": "^5.34.0",
         "@ledgerhq/logs": "^5.30.0",

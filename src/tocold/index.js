@@ -10,7 +10,7 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
     // 代转账金额
     const utxoCalamount =  Math.pow(10, 8) * parseFloat(rawAmount);
 
-    const info = await Api.getInstance().getTrusteeSessionInfo();
+    const info = await Api.getInstance().getTrusteeSessionInfo(0);
     const hotAddr = String(info.hotAddress.addr);
     // todo: 等新的冷地址生成后替换成新的冷地址
     const coldAddr = String("bc1pj0hh43htncag2c5ufmfq86fuma802qje4reatudhvqyxe5k4sgmqjxutnd");
