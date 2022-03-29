@@ -3,6 +3,7 @@ const Api = require("../chainx")
 
 // 根据utxo 数量计算 amount
 async function calNeedUtxo(count){
+    let utxoCalamount = 1;
     const bitcoinType = "mainnet";
     try {
         const info = await Api.getInstance().getTrusteeSessionInfo(0);
@@ -12,7 +13,6 @@ async function calNeedUtxo(count){
             return b.amount > a.amount
         });
         const unspentsLimit = []
-        let utxoCalamount = 1;
         console.log(`utxo ${JSON.stringify(unspents[0])}`)
         // 如果 count 大于 当前utxo 数量，则使用当前 utxo， 否则使用 count 个 utxo
         const needCount = unspents.length < count ? unspents.length : count;
@@ -20,7 +20,7 @@ async function calNeedUtxo(count){
             unspentsLimit.push(unspents[i])
             utxoCalamount += unspents[i].amount
         }
-        utxoCalamount / Math.pow(10, 8)
+        utxoCalamount = utxoCalamount / Math.pow(10, 8)
     } catch (error) {
         console.log(e)
     } 
