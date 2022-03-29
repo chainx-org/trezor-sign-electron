@@ -4,7 +4,7 @@ const Api = require("../chainx")
 // 根据utxo 数量计算 amount
 async function calNeedUtxo(count){
     const bitcoinType = "mainnet";
-    const info = await Api.getInstance().getTrusteeSessionInfo();
+    const info = await Api.getInstance().getTrusteeSessionInfo(0);
     const hotAddr = String(info.hotAddress.addr);
     const unspents = await getUnspents(hotAddr, bitcoinType);
     unspents.sort((a, b) => {

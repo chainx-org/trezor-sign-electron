@@ -1,8 +1,6 @@
-## Electron renderer process with popup (default)
+## trezor-sign-electron
 
-`trezor-connect` files are hosted on `connect.trezor.io` domain and rendered inside `popup` (new window) element.
-
-This application can be also developed and published in browser since it doesn't require any electron specific behavior and it will act in the same way in both environments.
+Trezor 比特币多签工具，用于冷热钱包互转
 
 ### Install
 
