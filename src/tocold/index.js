@@ -11,6 +11,7 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
 
     const info = await Api.getInstance().getTrusteeSessionInfo();
     const hotAddr = String(info.hotAddress.addr);
+    // 这里的冷地址改成中间地址，再由中间地址转到最新的chainx 冷热钱包
     const coldAddr = String(info.coldAddress.addr);
     const required = info.threshold;
 

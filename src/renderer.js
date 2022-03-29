@@ -7,6 +7,7 @@ const { remove0x } = require('./util')
 const {contructToCold} = require("./tocold")
 const colors = require('colors')
 const { redeemScript,BITCOIN_FEE_RATE} = require('./constants');
+const { calNeedUtxo } = require('./util/cal')
 //const {cal} = require('./cal')
 
 // click to get public key
@@ -21,9 +22,15 @@ const trezorPublicKey = document.getElementById('trezor-publickey');
 const bitcoinType = "mainnet"
 
 const signpanel = document.getElementById('text-signedtx');
-inputBitcoinNumber.value = 1;
 inputBitcoinFee.value = BITCOIN_FEE_RATE
 const trezor = new Trezor(bitcoinType);
+
+(async () => {
+    // 返回 150个utxo对应的amount
+    const needUtxoAmount = await calNeedUtxo(150)
+    console.log(colors.red(`需要的utxo amount: ${needUtxoAmount}`))
+    inputBitcoinNumber.value = needUtxoAmount;
+})();
 
 btnSignToCold.onclick = async () => {
     await trezor.init()
