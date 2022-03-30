@@ -3,7 +3,6 @@ const bitcoin = require("bitcoinjs-lib");
 const colors = require('colors')
 const Api = require("../chainx")
 const { MIN_CHANGE } = require("../constants")
-const {getScriptPubkey} = require("musig2bitcoin");
 
 async function contructToCold(rawAmount,bitcoin_fee_rate) {
 
@@ -15,9 +14,8 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
     // todo: 等新的冷地址生成后替换成新的冷地址
     const coldAddr = String("3G3ARxPzbvb8EbVmfjYwE3yYcfeQhgGXMH");
     const properties = await Api.getInstance().getChainProperties();
-    const coldScriptPubkey = getScriptPubkey(coldAddr, properties.bitcoinType);
     const required = info.threshold;
-    console.log(colors.blue(`hot address: ${hotAddr}, cold address: ${coldAddr}, coldScriptPubkey: ${coldScriptPubkey}, required: ${required}, total:${JSON.stringify(info.trusteeList)}))`));
+    console.log(colors.blue(`hot address: ${hotAddr}, cold address: ${coldAddr}, required: ${required}, total:${JSON.stringify(info.trusteeList)}))`));
 
     const total = info.trusteeList.length;
     console.log(`total ${total} bitcoin type ${properties.bitcoinType}`)
@@ -63,7 +61,7 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
         txb.addInput(unspent.txid, unspent.vout);
     }
 
-    txb.addOutput(Buffer.from(coldScriptPubkey, "hex"), utxoCalamount);
+    txb.addOutput(coldAddr, utxoCalamount);
     if (change > 0) {
         console.log(`hotAddr ${hotAddr} change ${change} BTC`);
         txb.addOutput(hotAddr, change);
