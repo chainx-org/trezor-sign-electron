@@ -1,0 +1,87 @@
+# Copyright 2020-2021 Signal Messenger, LLC
+# SPDX-License-Identifier: AGPL-3.0-only
+
+name: Build Electron App For Win/Mac
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+# Workflow's jobs
+jobs:
+  # job's id
+  release:
+    # job's name
+    name: build and release electron app
+
+    # the type of machine to run the job on
+    runs-on: ${{ matrix.os }}
+
+    # create a build matrix for jobs
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, macos-10.15, ubuntu-20.04]
+
+
+    # create steps
+    steps:
+      # step1: check out repository
+      - uses: actions/checkout@v2
+
+      # step2: install node
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.16.0'
+      - run: npm install -g yarn@1.22.10
+
+      # step2: install and cache node_modules
+      - name: Cache Desktop node_modules
+        id: cache-desktop-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock', 'patches/**') }}
+      - name: Install Desktop node_modules
+        if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+        run: yarn install 
+
+      # step4: cleanup artifacts in dist_electron
+      - name: build artifacts for windows
+        if: matrix.os == 'windows-2019'
+        run: |
+          yarn 
+          yarn build:win
+        env:
+          NODE_ENV: production
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build mac app
+        if: matrix.os == 'macos-10.15'
+        run: |
+          yarn build:mac
+      
+      - name: cleanup artifacts for windows
+        if: matrix.os == 'windows-2019'
+        run: |
+          npx rimraf "build/!(*.exe)"
+
+      - name: cleanup artifacts for macos
+        if: matrix.os == 'macos-10.15'
+        run: |
+          npx rimraf "build/!(*.dmg)"
+      
+      # step6: upload artifacts
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}
+          path: build
+      
+      - name: release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: "build/**"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
