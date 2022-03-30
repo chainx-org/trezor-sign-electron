@@ -27,7 +27,7 @@ const trezor = new Trezor(bitcoinType);
 
 (async () => {
     // 返回 150个utxo对应的amount
-    const needUtxoAmount = await calNeedUtxo(150)
+    const needUtxoAmount = await calNeedUtxo(120)
     console.log(colors.red(`需要的utxo amount: ${needUtxoAmount}`))
     inputBitcoinNumber.value = needUtxoAmount;
 })();
