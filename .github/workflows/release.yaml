@@ -54,14 +54,16 @@ jobs:
         run: |
           yarn build:win
         env:
-          GITHUB_TOKEN: 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
+          NODE_ENV: production
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
       - name: build mac app
         if: matrix.os == 'macos-10.15'
         run: |
           yarn build:mac
         env:
-          GITHUB_TOKEN: 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
+          NODE_ENV: production
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: cleanup artifacts for windows
         if: matrix.os == 'windows-2019'
