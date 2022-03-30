@@ -53,11 +53,15 @@ jobs:
         if: matrix.os == 'windows-2019'
         run: |
           yarn build:win
-
+        env:
+          GH_TOKEN: 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
+        
       - name: build mac app
         if: matrix.os == 'macos-10.15'
         run: |
           yarn build:mac
+        env:
+          GH_TOKEN: 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
       
       - name: cleanup artifacts for windows
         if: matrix.os == 'windows-2019'
@@ -80,6 +84,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          github_token: ${{ secrets.github_token }}
           files: "build/**"
+        env:
+          GH_TOKEN: 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
 
