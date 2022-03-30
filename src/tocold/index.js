@@ -13,7 +13,7 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
     const info = await Api.getInstance().getTrusteeSessionInfo(0);
     const hotAddr = String(info.hotAddress.addr);
     // todo: 等新的冷地址生成后替换成新的冷地址
-    const coldAddr = String("bc1pj0hh43htncag2c5ufmfq86fuma802qje4reatudhvqyxe5k4sgmqjxutnd");
+    const coldAddr = String("3G3ARxPzbvb8EbVmfjYwE3yYcfeQhgGXMH");
     const properties = await Api.getInstance().getChainProperties();
     const coldScriptPubkey = getScriptPubkey(coldAddr, properties.bitcoinType);
     const required = info.threshold;
