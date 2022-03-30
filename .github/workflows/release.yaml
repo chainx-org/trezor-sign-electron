@@ -54,14 +54,14 @@ jobs:
         run: |
           yarn build:win
         env:
-          GH_TOKEN: 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
+          GH_TOKEN: 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
         
       - name: build mac app
         if: matrix.os == 'macos-10.15'
         run: |
           yarn build:mac
         env:
-          GH_TOKEN: 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
+          GH_TOKEN: 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
       
       - name: cleanup artifacts for windows
         if: matrix.os == 'windows-2019'
@@ -86,5 +86,5 @@ jobs:
         with:
           files: "build/**"
         env:
-          GH_TOKEN: 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
+          GH_TOKEN: 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
 
