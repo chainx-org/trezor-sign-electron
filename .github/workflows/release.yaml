@@ -61,9 +61,15 @@ jobs:
         run: |
           yarn build:mac
       
-      - name: cleanup artifacts
+      - name: cleanup artifacts for windows
+        if: matrix.os == 'windows-2019'
         run: |
-          npx rimraf "build/!(*.exe|*.dmg)"
+          npx rimraf "build/!(*.exe)"
+
+      - name: cleanup artifacts for macos
+        if: matrix.os == 'macos-10.15'
+        run: |
+          npx rimraf "build/!(*.dmg)"
       
       # step6: upload artifacts
       - name: upload artifacts
