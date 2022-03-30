@@ -60,7 +60,6 @@
         "electron-builder": "^22.7.0"
     },
     "dependencies": {
-        "musig2bitcoin": "1.4.4",
         "@ledgerhq/hw-app-btc": "^5.34.1",
         "@ledgerhq/hw-transport-node-hid": "^5.34.0",
         "@ledgerhq/logs": "^5.30.0",
