@@ -33,7 +33,6 @@ const trezor = new Trezor(bitcoinType);
 })();
 
 btnSignToCold.onclick = async () => {
-    await trezor.init()
     let toColdNumber = inputBitcoinNumber.value
     let toColdFee = inputBitcoinFee.value
     console.log(`toColdNumber: ${toColdNumber} toColdFee: ${toColdFee}`);
