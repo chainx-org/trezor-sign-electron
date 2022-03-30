@@ -24,8 +24,6 @@
             "src/**/*",
             "src/*",
             "src/index.html",
-            "src/res/rpc.json",
-            "src/res/types.json",
             "package.json"
         ],
         "dmg": {
