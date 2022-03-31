@@ -1,10 +1,11 @@
-const { getUnspents } = require("../bitcoin/bitcoin.js")
+const {getUnspents} = require("../bitcoin/bitcoin.js")
 const Api = require("../chainx")
 
 // 根据utxo 数量计算 amount
-async function calNeedUtxo(count){
-    let utxoCalamount = 1;
+async function calNeedUtxo(count) {
     const bitcoinType = "mainnet";
+    let unspents_result = []
+
     try {
         const info = await Api.getInstance().getTrusteeSessionInfo(0);
         const hotAddr = String(info.hotAddress.addr);
@@ -12,20 +13,26 @@ async function calNeedUtxo(count){
         unspents.sort((a, b) => {
             return b.amount > a.amount
         });
-        const unspentsLimit = []
-        console.log(`utxo ${JSON.stringify(unspents[0])}`)
-        // 如果 count 大于 当前utxo 数量，则使用当前 utxo， 否则使用 count 个 utxo
-        const needCount = unspents.length < count ? unspents.length : count;
-        for (let i = 0; i < needCount; i ++) {
-            unspentsLimit.push(unspents[i])
-            utxoCalamount += unspents[i].amount
+        let unspents_slices = []
+        for (let i = 0, len = unspents.length; i < len; i += count) {
+            unspents_slices.push(unspents.slice(i, i + count));
+            console.log("i",i, count)
         }
-        utxoCalamount = utxoCalamount / Math.pow(10, 8)
+        console.log("unspents_slices", unspents_slices)
+        for (let k = 0; k < unspents_slices.length; k+=1) {
+            let unspentsLimit = []
+            let utxoCalamount = 0;
+            for (let i = 0; i < unspents_slices[k].length; i++) {
+                unspentsLimit.push(unspents_slices[k][i])
+                utxoCalamount += unspents_slices[k][i].amount
+            }
+            unspents_result.push({unspentsLimit, utxoCalamount})
+        }
+
     } catch (error) {
-        console.log(e)
-    } 
-    // 返回count个utxto的总金额
-    return utxoCalamount
+        console.log(error)
+    }
+    return unspents_result
 }
 
 module.exports = {

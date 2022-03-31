@@ -15,7 +15,7 @@ const btnSignWithTrezor = document.getElementById('sign-with-trezor');
 const textRawTx = document.getElementById('text-rawtx');
 
 const btnSignToCold = document.getElementById('sign-to-cold');
-const inputBitcoinNumber = document.getElementById('input-bitcoin-number');
+const inputBitcoinNumber = document.getElementById('input-slice-number');
 const inputBitcoinFee = document.getElementById('input-bitcoin-fee');
 const trezorAddress = document.getElementById('trezor-address');
 const trezorPublicKey = document.getElementById('trezor-publickey');
@@ -25,21 +25,17 @@ const signpanel = document.getElementById('text-signedtx');
 inputBitcoinFee.value = BITCOIN_FEE_RATE
 const trezor = new Trezor(bitcoinType);
 
-(async () => {
-    // 返回 150个utxo对应的amount
-    const needUtxoAmount = await calNeedUtxo(120)
-    console.log(colors.red(`需要的utxo amount: ${needUtxoAmount}`))
-    inputBitcoinNumber.value = needUtxoAmount;
-})();
+inputBitcoinNumber.value = 16;
+console.log(colors.red(`每次话费的txid数量: ${inputBitcoinNumber.value}`))
 
 btnSignToCold.onclick = async () => {
-    let toColdNumber = inputBitcoinNumber.value
+    let toColdNumber = parseInt(inputBitcoinNumber.value)
     let toColdFee = inputBitcoinFee.value
     console.log(`toColdNumber: ${toColdNumber} toColdFee: ${toColdFee}`);
-    const hash = await contructToCold(toColdNumber,toColdFee)
-    console.log(`hash: ${hash}`);
-    textRawTx.value = hash
-    window.alert(JSON.stringify(hash))
+    const txs = await contructToCold(toColdNumber,toColdFee)
+    console.log(`txs: ${JSON.stringify(txs)}`);
+    textRawTx.value = JSON.stringify(txs)
+    window.alert(JSON.stringify(txs))
 }
 
 btnSignWithTrezor.onclick = async () => {
@@ -49,15 +45,15 @@ btnSignWithTrezor.onclick = async () => {
    const address = await trezor.getAddress()
    const deviceInfo = await trezor.getXPubAndPublicKey()
    trezorAddress.innerText = `当前硬件钱包地址为：${address}`
-   trezorPublicKey.innerText = `当前硬件钱包公钥为：${deviceInfo.publicKey}` 
+   trezorPublicKey.innerText = `当前硬件钱包公钥为：${deviceInfo.publicKey}`
 
    console.log(colors.red(`当前钱包 address: ${address}  xpub: ${deviceInfo.xpub} publicKey: ${deviceInfo.publicKey}`));
    const inputAndOutPutResult = await getInputsAndOutputsFromTx(rawTx, bitcoinType);
-   
+
    const signData = await trezor.sign(
-       rawTx, 
-       inputAndOutPutResult.txInputs, 
-       remove0x(redeemScript), 
+       rawTx,
+       inputAndOutPutResult.txInputs,
+       remove0x(redeemScript),
        bitcoinType,
        deviceInfo
     );

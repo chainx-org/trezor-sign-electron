@@ -87,7 +87,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             return JSON.stringify(args[0]) + JSON.stringify(args[1]);
         },
     });
-    
+
 
     if (!tx) return;
 
@@ -176,7 +176,7 @@ const fetchNodeTxsFromTxidList = async (ids) => {
              response响应状态码：${response.status}`);
         }
         const json = await response.json();
-       
+
         return json;
     });
     let rawTxs = []

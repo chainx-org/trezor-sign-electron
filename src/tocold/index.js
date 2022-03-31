@@ -1,13 +1,12 @@
-const { getUnspents, calcTargetUnspents } = require("../bitcoin/bitcoin.js")
+const {getUnspents, calcTargetUnspents} = require("../bitcoin/bitcoin.js")
 const bitcoin = require("bitcoinjs-lib");
 const colors = require('colors')
 const Api = require("../chainx")
-const { MIN_CHANGE } = require("../constants")
+const {MIN_CHANGE} = require("../constants")
+const {calNeedUtxo} = require("../util/cal");
+const {readUInt64LE} = require("bitcoinjs-lib-zcash/src/bufferutils");
 
-async function contructToCold(rawAmount,bitcoin_fee_rate) {
-
-    // 代转账金额
-    const utxoCalamount =  Math.pow(10, 8) * parseFloat(rawAmount);
+async function contructToCold(rawNumber, bitcoin_fee_rate) {
 
     const info = await Api.getInstance().getTrusteeSessionInfo(0);
     const hotAddr = String(info.hotAddress.addr);
@@ -19,55 +18,52 @@ async function contructToCold(rawAmount,bitcoin_fee_rate) {
 
     const total = info.trusteeList.length;
     console.log(`total ${total} bitcoin type ${properties.bitcoinType}`)
-
-    const unspents = await getUnspents(hotAddr, properties.bitcoinType);
-    unspents.sort((a, b) => {
-            return b.amount > a.amount
-    });
+    const unspents = await calNeedUtxo(rawNumber)
     // 每次取 200 个utxo
-    console.log(`utxo length ${unspents.length}}`)
+    console.log(`unspents ${JSON.stringify(unspents)}  length ${unspents.length}`)
+    let result = []
+    for (let i = 0; i < unspents.length; i += 1) {
+        let [targetInputs, minerFee] = await calcTargetUnspents(
+            unspents[i]["unspentsLimit"],
+            unspents[i]["utxoCalamount"] - 36000,
+            bitcoin_fee_rate,
+            required,
+            total
+        );
+        console.log(`targetInputs ${JSON.stringify(targetInputs)}  targetInputs ${targetInputs.length}`)
+        const inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
+        if (!minerFee) {
+            throw new Error("手续费计算错误");
+        } else {
+            minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
+        }
 
-    let [targetInputs, minerFee] = await calcTargetUnspents(
-        unspents,
-        utxoCalamount,
-        bitcoin_fee_rate,
-        required,
-        total
-    );
+        let change = inputSum - unspents[i]["utxoCalamount"] - minerFee;
 
-    const inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
-    if (!minerFee) {
-        throw new Error("手续费计算错误");
-    } else {
-        minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
+        console.log(`inputSum ${inputSum} amount ${unspents[i]["utxoCalamount"]} minerFee ${minerFee}`);
+        if (change < Number(MIN_CHANGE)) {
+            change = 0;
+        }
+        const network =
+            properties.bitcoinType === "mainnet"
+                ? bitcoin.networks.bitcoin
+                : bitcoin.networks.testnet;
+        const txb = new bitcoin.TransactionBuilder(network);
+        txb.setVersion(1);
+
+        // @ts-ignore
+        for (const unspent of targetInputs) {
+            txb.addInput(unspent.txid, unspent.vout);
+        }
+        if (change > 0) {
+            txb.addOutput(coldAddr, unspents[i]["utxoCalamount"] + change);
+        } else {
+            txb.addOutput(coldAddr, unspents[i]["utxoCalamount"]);
+        }
+        const rawTx = txb.buildIncomplete().toHex();
+        result.push(rawTx)
     }
-
-    let change = inputSum - utxoCalamount - minerFee;
-
-    console.log(`inputSum ${inputSum} amount ${utxoCalamount} minerFee ${minerFee}`);
-    if (change < Number(MIN_CHANGE)) {
-        change = 0;
-    }
-
-    const network =
-    properties.bitcoinType === "mainnet"
-        ? bitcoin.networks.bitcoin
-        : bitcoin.networks.testnet;
-    const txb = new bitcoin.TransactionBuilder(network);
-    txb.setVersion(1);
-
-    // @ts-ignore
-    for (const unspent of targetInputs) {
-        txb.addInput(unspent.txid, unspent.vout);
-    }
-
-    txb.addOutput(coldAddr, utxoCalamount);
-    if (change > 0) {
-        console.log(`hotAddr ${hotAddr} change ${change} BTC`);
-        txb.addOutput(hotAddr, change);
-    }
-    const rawTx = txb.buildIncomplete().toHex();
-    return rawTx;
+    return result;
 }
 
 module.exports = {
