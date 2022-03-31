@@ -9,9 +9,9 @@ async function calNeedUtxo(count) {
     try {
         const info = await Api.getInstance().getTrusteeSessionInfo(0);
         const hotAddr = String(info.hotAddress.addr);
-        const unspents = await getUnspents(hotAddr, bitcoinType);
+        let unspents = await getUnspents(hotAddr, bitcoinType);
         unspents.sort((a, b) => {
-            return b.amount > a.amount
+            return b.amount - a.amount
         });
         for (let i = 0, len = unspents.length; i < len; i += count) {
             unspents_result.push(unspents.slice(i, i + count));
