@@ -1,6 +1,6 @@
 {
     "name": "trezor-sign-tools",
-    "version": "0.0.10",
+    "version": "0.1.9-unspents-tx",
     "description": "Example of electron app with trezor-connect",
     "main": "src/electron.js",
     "author": "Satoshilabs s.r.o <info@satoshilabs.com>",
