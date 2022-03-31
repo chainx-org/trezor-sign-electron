@@ -13,22 +13,9 @@ async function calNeedUtxo(count) {
         unspents.sort((a, b) => {
             return b.amount > a.amount
         });
-        let unspents_slices = []
         for (let i = 0, len = unspents.length; i < len; i += count) {
-            unspents_slices.push(unspents.slice(i, i + count));
-            console.log("i",i, count)
+            unspents_result.push(unspents.slice(i, i + count));
         }
-        console.log("unspents_slices", unspents_slices)
-        for (let k = 0; k < unspents_slices.length; k+=1) {
-            let unspentsLimit = []
-            let utxoCalamount = 0;
-            for (let i = 0; i < unspents_slices[k].length; i++) {
-                unspentsLimit.push(unspents_slices[k][i])
-                utxoCalamount += unspents_slices[k][i].amount
-            }
-            unspents_result.push({unspentsLimit, utxoCalamount})
-        }
-
     } catch (error) {
         console.log(error)
     }

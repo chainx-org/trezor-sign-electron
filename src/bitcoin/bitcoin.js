@@ -1,5 +1,5 @@
-const  memoize = require('memoizee');
-const { sleep } =  require('../util');
+const memoize = require('memoizee');
+const {sleep} = require('../util');
 const fetch = require("node-fetch");
 const bitcoin = require("bitcoinjs-lib")
 const colors = require('colors')
@@ -43,14 +43,11 @@ function pickUtxos(utxos, outSum) {
     return result;
 }
 
-async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
-    let outSum = amount;
-    let targetInputs = pickUtxos(utxos, amount);
-    let inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
+async function calcTargetUnspents(utxos, feeRate, required, total) {
     let outputLength = 1;
     let bytes =
-        targetInputs.length * (48 + 73 * required + 34 * total) +
-        34 * (outputLength + 1) +
+        utxos.length * (48 + 73 * required + 34 * total) +
+        34 * outputLength +
         14;
 
     let minerFee = parseInt(
@@ -58,18 +55,10 @@ async function calcTargetUnspents(utxos, amount, feeRate, required, total) {
         (Number(feeRate) * bytes) / 1000, 10
     );
 
-    while (inputSum < outSum + minerFee) {
-        targetInputs = pickUtxos(utxos, outSum + minerFee);
-        inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
-        bytes =
-            targetInputs.length * (48 + 73 * required + 34 * total) +
-            34 * (outputLength + 1) +
-            14;
-        minerFee = (Number(feeRate) * bytes) / 1000;
-    }
+    let inputSum = utxos.reduce((sum, input) => sum + input.amount, 0);
 
 
-    return [targetInputs, minerFee];
+    return [utxos, inputSum, minerFee];
 }
 
 
@@ -109,7 +98,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
             value: item.value / Math.pow(10, 8),
             // @ts-ignore
             satoshi: item.value,
-            ...(address ? {} : { err: true }),
+            ...(address ? {} : {err: true}),
         };
     });
 
@@ -141,7 +130,7 @@ const getInputsAndOutputsFromTx = async (tx, currentNetwork) => {
                 hash: findOne.txid,
                 value: findOutputOne / Math.pow(10, 8),
                 satoshi: findOutputOne.value,
-                ...(address ? {} : { err: true }),
+                ...(address ? {} : {err: true}),
             };
         });
     }

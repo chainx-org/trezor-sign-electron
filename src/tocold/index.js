@@ -23,27 +23,26 @@ async function contructToCold(rawNumber, bitcoin_fee_rate) {
     console.log(`unspents ${JSON.stringify(unspents)}  length ${unspents.length}`)
     let result = []
     for (let i = 0; i < unspents.length; i += 1) {
-        let [targetInputs, minerFee] = await calcTargetUnspents(
-            unspents[i]["unspentsLimit"],
-            unspents[i]["utxoCalamount"] - 36000,
+        let [targetInputs, inputSum, minerFee] = await calcTargetUnspents(
+            unspents[i],
             bitcoin_fee_rate,
             required,
             total
         );
         console.log(`targetInputs ${JSON.stringify(targetInputs)}  targetInputs ${targetInputs.length}`)
-        const inputSum = targetInputs.reduce((sum, input) => sum + input.amount, 0);
+
+        if (inputSum <= minerFee + MIN_CHANGE){
+            throw new Error("输入金额不足");
+        }
+
         if (!minerFee) {
             throw new Error("手续费计算错误");
         } else {
             minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
         }
 
-        let change = inputSum - unspents[i]["utxoCalamount"] - minerFee;
+        console.log(`inputSum ${inputSum}  minerFee ${minerFee}`);
 
-        console.log(`inputSum ${inputSum} amount ${unspents[i]["utxoCalamount"]} minerFee ${minerFee}`);
-        if (change < Number(MIN_CHANGE)) {
-            change = 0;
-        }
         const network =
             properties.bitcoinType === "mainnet"
                 ? bitcoin.networks.bitcoin
@@ -55,11 +54,7 @@ async function contructToCold(rawNumber, bitcoin_fee_rate) {
         for (const unspent of targetInputs) {
             txb.addInput(unspent.txid, unspent.vout);
         }
-        if (change > 0) {
-            txb.addOutput(coldAddr, unspents[i]["utxoCalamount"] + change);
-        } else {
-            txb.addOutput(coldAddr, unspents[i]["utxoCalamount"]);
-        }
+        txb.addOutput(coldAddr, inputSum - minerFee);
         const rawTx = txb.buildIncomplete().toHex();
         result.push(rawTx)
     }
