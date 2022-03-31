@@ -31,8 +31,10 @@ async function contructToCold(rawNumber, bitcoin_fee_rate) {
         );
         console.log(`targetInputs ${JSON.stringify(targetInputs)}  targetInputs ${targetInputs.length}`)
 
-        if (inputSum <= minerFee + MIN_CHANGE){
-            throw new Error("输入金额不足");
+        console.log(`inputSum ${inputSum}  minerFee ${minerFee} min_change ${MIN_CHANGE} `);
+        if (inputSum <= minerFee + MIN_CHANGE) {
+            console.log("输入金额不足, 忽略");
+            continue
         }
 
         if (!minerFee) {
@@ -40,8 +42,6 @@ async function contructToCold(rawNumber, bitcoin_fee_rate) {
         } else {
             minerFee = parseInt(parseFloat(minerFee.toString()).toFixed(0));
         }
-
-        console.log(`inputSum ${inputSum}  minerFee ${minerFee}`);
 
         const network =
             properties.bitcoinType === "mainnet"
@@ -54,9 +54,15 @@ async function contructToCold(rawNumber, bitcoin_fee_rate) {
         for (const unspent of targetInputs) {
             txb.addInput(unspent.txid, unspent.vout);
         }
+        const outSum = inputSum - minerFee;
         txb.addOutput(coldAddr, inputSum - minerFee);
         const rawTx = txb.buildIncomplete().toHex();
-        result.push(rawTx)
+        result.push({
+            rawTx,
+            "inputSum": inputSum / Math.pow(10, 8),
+            "outSum": outSum / Math.pow(10, 8),
+            "minerFee": minerFee / Math.pow(10, 8)
+        })
     }
     return result;
 }
