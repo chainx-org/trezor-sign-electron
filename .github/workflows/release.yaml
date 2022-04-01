@@ -36,10 +36,6 @@ jobs:
           node-version: '14.16.0'
       - run: npm install -g yarn@1.22.10
 
-      - name: Install Desktop node_modules
-        if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: yarn install 
-      
       # step2: install and cache node_modules
       - name: Cache Desktop node_modules
         id: cache-desktop-modules
@@ -48,6 +44,10 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock', 'patches/**') }}
 
+      - name: Install Desktop node_modules
+        if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+        run: yarn install 
+      
       # step4: cleanup artifacts in dist_electron
       - name: build artifacts for windows
         if: matrix.os == 'windows-2019'
