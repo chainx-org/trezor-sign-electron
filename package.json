@@ -45,8 +45,8 @@
             "target": "dmg"
         },
         "linux": {
-            "executableName": "TrezorConnectExample",
-            "artifactName": "TrezorConnectExample.${ext}",
+            "executableName": "TrezorSignTools",
+            "artifactName": "TrezorSignTools.${ext}",
             "target": "AppImage"
         },
         "win": {
