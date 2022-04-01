@@ -83,7 +83,7 @@ jobs:
         run: |
           npx rimraf "build/!(*.dmg)"
 
-      - name: cleanup artifacts for macos
+      - name: cleanup artifacts for linux
         if: matrix.os == 'ubuntu-20.04'
         run: |
           npx rimraf "build/!(*.AppImage)"
